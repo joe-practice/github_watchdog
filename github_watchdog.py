@@ -10,7 +10,7 @@ class Contrib():
     #repo='stack72/ops-books'
     def __init__(self):
         config = configparser.ConfigParser()
-        config.read(github_watchdog.conf)
+        config.read('github_watchdog.conf')
         self.repo = config['default']['repo']
         self.slack_token = config['default']['slack_token']
         self.slack_channel = config['default']['slack_channel']
