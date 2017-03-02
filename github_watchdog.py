@@ -47,7 +47,7 @@ class Contrib():
 
     def check_contribs(self):
         current,new_contrib=self.count_contribs()
-        d = shelve.open('/tmp/persist/github_watchdog')
+        d = shelve.open('/github_watchdog/persist/github_watchdog')
         flag = 'contrib_count' in d
         if flag:
             if (d['contrib_count']) == current:
