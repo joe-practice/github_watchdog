@@ -1,0 +1,20 @@
+---
+- hosts: all
+  become: true
+  tasks:
+  - file:
+      path: /root/github_watchdog
+      state: directory
+      mode: 0755
+
+  - name: clone watchdog repo
+    command: git clone https://github.com/joe-practice/github_watchdog.git /root/github_watchdog
+
+  - name: touch log
+    command: touch /root/github_watchdog/github_watchdog.log
+
+  - name: pull container image
+    command: docker pull joepractice/github_watchdog
+
+  - name: run container daemonized
+    command: docker run -dit -v /root/github_watchdog/github_watchdog.log:/github_watchdog/github_watchdog.log -v /root/github_watchdog/persist:/github_watchdog/persist -v /root/github_watchdog/github_watchdog.conf:/github_watchdog/github_watchdog.conf joepractice/github_watchdog
