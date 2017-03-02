@@ -6,20 +6,22 @@ from slacker import Slacker
 from github import Github
 
 class Contrib():
-    #github's api rate limits might require authentication for >100 contribs
-    #repo='stack72/ops-books'
+    """github's api rate limits might require authentication for >100 contribs"""
     def __init__(self):
+        """initialize a contrib object"""
         config = configparser.ConfigParser()
         config.read('github_watchdog.conf')
         self.repo = config['default']['repo']
         self.slack_token = config['default']['slack_token']
         self.slack_channel = config['default']['slack_channel']
 
-    def slack_alert(self):
+    def slack_alert(self, alert_message):
+        """send an alert to slack"""
         slack = Slacker(self.slack_token)
-        slack.chat.post_message(self.slack_channel, 'alert: new contributor detected')
+        slack.chat.post_message(self.slack_channel, alert_message)
 
     def log(self, message):
+        """write to a local log"""
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(levelname)s %(message)s',
                             filename='github_watchdog.log',
@@ -27,6 +29,7 @@ class Contrib():
         logging.info(message)
 
     def count_contribs(self):
+        """count contributors to a repo"""
         contrib_arr = []
         count = 0
         g = Github()
@@ -40,17 +43,18 @@ class Contrib():
         return count, new_contrib
 
     def check_contribs(self):
+        """see if number of contributors changes"""
         current, new_contrib = self.count_contribs()
         d = shelve.open('/github_watchdog/persist/gw_shelve')
         flag = 'contrib_count' in d
         if flag:
             if (d['contrib_count']) == current:
-                #self.slack_alert()
+                self.slack_alert('no change in contributors')
                 self.log('no change in contributors')
                 print 'no change in number of contribs'
             else:
-                #self.slack_alert()
-                self.log('new contributor: '+new_contrib)
+                self.slack_alert('alert: new contributor detected')
+                self.log('new contributor: ' + new_contrib)
                 d['contrib_count'] = current
                 print 'ermagerd, more contribs!!!'
         else:
