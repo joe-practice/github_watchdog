@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # poll github for new contributors
 
-import shelve, configparser, logging
+import shelve, configparser, logging, time
 from slacker import Slacker
 from github import Github
 
@@ -12,6 +12,7 @@ class Contrib():
         config = configparser.ConfigParser()
         config.read('github_watchdog.conf')
         self.repo = config['default']['repo']
+        self.poll_int = config['default']['poll_int']
         self.slack_token = config['default']['slack_token']
         self.slack_channel = config['default']['slack_channel']
 
@@ -63,4 +64,6 @@ class Contrib():
         d.close()
 
 con = Contrib()
-con.check_contribs()
+while True:
+    con.check_contribs()
+    time.sleep(poll_int)
