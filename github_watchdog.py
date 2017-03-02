@@ -61,6 +61,7 @@ class Contrib():
                 print('ermagerd, more contribs!!!')
         else:
             print('initializing state')
+            self.log('initializing state')
             d['contrib_count']=current
         d.close()
 
