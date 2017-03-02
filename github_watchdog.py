@@ -15,7 +15,7 @@ class Contrib():
         self.slack_token = config['default']['slack_token']
         self.slack_channel = config['default']['slack_channel']
         global poll_int
-        poll_int = config['default']['poll_int']
+        poll_int = float(config['default']['poll_int'])
 
     def slack_alert(self, alert_message):
         """send an alert to slack"""
