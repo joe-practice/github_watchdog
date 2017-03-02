@@ -12,4 +12,8 @@ Even better, we can pull the existing image from dockerhub:
 
 docker pull joepractice/github_watchdog
 
-docker run -dit -v ~/play/github_watchdog.log:/github_watchdog/github_watchdog.log -v ~/play/persist:/github_watchdog/persist -v ~/play/github_watchdog.conf:/github_watchdog/github_watchdog.conf joepractice/github_watchdog
+docker run -dit \
+-v ~/play/github_watchdog.log:/github_watchdog/github_watchdog.log \
+-v ~/play/persist:/github_watchdog/persist \
+-v ~/play/github_watchdog.conf:/github_watchdog/github_watchdog.conf \
+joepractice/github_watchdog
