@@ -58,7 +58,7 @@ class Contrib():
                 self.slack_alert('alert: new contributor detected')
                 self.log('new contributor: ' + new_contrib)
                 d['contrib_count'] = current
-                print 'ermagerd, more contribs!!!'
+                print 'new contributor detected!!!'
         else:
             print 'initializing state'
             d['contrib_count'] = current
