@@ -14,8 +14,11 @@ class Contrib():
         self.repo = config['default']['repo']
         self.slack_token = config['default']['slack_token']
         self.slack_channel = config['default']['slack_channel']
-        global poll_int
-        poll_int = float(config['default']['poll_int'])
+        self.poll_int = float(config['default']['poll_int'])
+        self.git_token = config['default']['git_token']
+        
+    def poll(self):
+        time.sleep(self.poll_int)
 
     def slack_alert(self, alert_message):
         """send an alert to slack"""
@@ -34,7 +37,7 @@ class Contrib():
         """count contributors to a repo"""
         contrib_arr = []
         count = 0
-        g = Github()
+        g = Github(self.git_token)
         r = g.get_repo(self.repo)
         contrib_list = r.get_contributors()
         for each in contrib_list:
@@ -51,11 +54,13 @@ class Contrib():
         flag = 'contrib_count' in d
         if flag:
             if (d['contrib_count']) == current:
-                self.slack_alert('no change in contributors')
+                message=self.repo + " has" + current + " contributors.  No change"
+                self.slack_alert(message)
                 self.log('no change in contributors')
                 print 'no change in number of contribs'
             else:
-                self.slack_alert('alert: new contributor detected')
+                message=self.repo + " has" + current + " contributors. New contributor detected: " + new_contrib
+                self.slack_alert(message)
                 self.log('new contributor: ' + new_contrib)
                 d['contrib_count'] = current
                 print 'new contributor detected!!!'
@@ -67,4 +72,4 @@ class Contrib():
 con = Contrib()
 while True:
     con.check_contribs()
-    time.sleep(poll_int)
+    con.poll()
