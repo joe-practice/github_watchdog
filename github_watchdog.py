@@ -73,10 +73,13 @@ class Contrib():
                 message=self.repo + " has " + current_size + " contributors. Change in contributors detected: "
                 self.slack_alert(message)
 		if len(contribs_added) > 0:
-			self.slack_alert(self.set2str(contribs_added) + " added")
+		    new_con = self.set2str(contribs_added)
+		    self.slack_alert(new_con + " added")
+		    self.log('new contributor(s): ' + new_con)
 		if len(contribs_lost) > 0:
-			self.slack_alert(self.set2str(contribs_lost) + " left")
-                #self.log('new contributor: ' + new_contrib)
+		    lost_con = self.set2str(contribs_lost)
+		    self.slack_alert(self.set2str(lost_con + " left")
+		    self.log('lost contributor(s): ' + lost_con
                 d['contrib_set'] = current
                 print 'change in contributors detected!!!'
         else:
