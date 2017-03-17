@@ -17,6 +17,12 @@ class Contrib():
         self.poll_int = float(config['default']['poll_int'])
         self.git_token = config['default']['git_token']
         
+    def set2str(self, input_set):
+	output_str = ''
+	for each in input_set:
+	    output_str += each + ' '
+	return output_str
+
     def poll(self):
         time.sleep(self.poll_int)
 
@@ -35,38 +41,47 @@ class Contrib():
 
     def count_contribs(self):
         """count contributors to a repo"""
-        contrib_arr = []
+        contrib_set_py = set()
         count = 0
         g = Github(self.git_token)
         r = g.get_repo(self.repo)
-        contrib_list = r.get_contributors()
-        for each in contrib_list:
-            count += 1
+        #contrib_list = r.get_contributors()
+	contrib_set_git = r.get_contributors()
+	
+        for each in contrib_set_git:
+	    contrib_set_py.add(each.login)
             print each.login
-            contrib_arr.append(each.login)
-        new_contrib = contrib_arr[-1]
-        return count, new_contrib
+        return contrib_set_py
 
     def check_contribs(self):
         """see if number of contributors changes"""
-        current, new_contrib = self.count_contribs()
+        current = self.count_contribs()
+	current_size = str(len(current))
+	contribs_added = set()
+	contribs_lost = set()
         d = shelve.open('/github_watchdog/persist/gw_shelve')
-        flag = 'contrib_count' in d
+        flag = 'contrib_set' in d
         if flag:
-            if (d['contrib_count']) == current:
-                message=self.repo + " has" + current + " contributors.  No change"
+            if (d['contrib_set']) == current:
+                message=self.repo + " has " + current_size + " contributors.  No change"
                 self.slack_alert(message)
                 self.log('no change in contributors')
                 print 'no change in number of contribs'
             else:
-                message=self.repo + " has" + current + " contributors. New contributor detected: " + new_contrib
+		contribs_added = current - d['contrib_set']
+		contribs_lost = d['contrib_set'] - current
+                message=self.repo + " has " + current_size + " contributors. Change in contributors detected: "
                 self.slack_alert(message)
-                self.log('new contributor: ' + new_contrib)
-                d['contrib_count'] = current
-                print 'new contributor detected!!!'
+		if len(contribs_added) > 0:
+			self.slack_alert(self.set2str(contribs_added) + " added")
+		if len(contribs_lost) > 0:
+			self.slack_alert(self.set2str(contribs_lost) + " left")
+                #self.log('new contributor: ' + new_contrib)
+                d['contrib_set'] = current
+                print 'change in contributors detected!!!'
         else:
             print 'initializing state'
-            d['contrib_count'] = current
+            d['contrib_set'] = current
         d.close()
 
 con = Contrib()
