@@ -63,23 +63,23 @@ class Contrib():
         flag = 'contrib_set' in d
         if flag:
             if (d['contrib_set']) == current:
-                message=self.repo + " has " + current_size + " contributors.  No change"
+                message=self.repo + ' has ' + current_size + ' contributors.  No change'
                 self.slack_alert(message)
                 self.log('no change in contributors')
                 print 'no change in number of contribs'
             else:
 		contribs_added = current - d['contrib_set']
 		contribs_lost = d['contrib_set'] - current
-                message=self.repo + " has " + current_size + " contributors. Change in contributors detected: "
+                message=self.repo + ' has ' + current_size + ' contributors. Change in contributors detected: '
                 self.slack_alert(message)
 		if len(contribs_added) > 0:
 		    new_con = self.set2str(contribs_added)
-		    self.slack_alert(new_con + " added")
+		    self.slack_alert(new_con + ' added')
 		    self.log('new contributor(s): ' + new_con)
 		if len(contribs_lost) > 0:
 		    lost_con = self.set2str(contribs_lost)
-		    self.slack_alert(self.set2str(lost_con + " left")
-		    self.log('lost contributor(s): ' + lost_con
+		    self.slack_alert(lost_con + ' left')
+		    self.log('lost contributor(s): '+ lost_con)
                 d['contrib_set'] = current
                 print 'change in contributors detected!!!'
         else:
