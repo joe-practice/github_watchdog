@@ -40,21 +40,18 @@ class Contrib():
         logging.info(message)
 
     def count_contribs(self):
-        """count contributors to a repo"""
+        """define a set of contributors"""
         contrib_set_py = set()
-        count = 0
         g = Github(self.git_token)
         r = g.get_repo(self.repo)
-        #contrib_list = r.get_contributors()
 	contrib_set_git = r.get_contributors()
 	
         for each in contrib_set_git:
 	    contrib_set_py.add(each.login)
-            print each.login
         return contrib_set_py
 
     def check_contribs(self):
-        """see if number of contributors changes"""
+        """see if membership of contributor set changes"""
         current = self.count_contribs()
 	current_size = str(len(current))
 	contribs_added = set()
@@ -63,14 +60,14 @@ class Contrib():
         flag = 'contrib_set' in d
         if flag:
             if (d['contrib_set']) == current:
-                message=self.repo + ' has ' + current_size + ' contributors.  No change'
+                message = self.repo + ' has ' + current_size + ' contributors.  No change'
                 self.slack_alert(message)
                 self.log('no change in contributors')
                 print 'no change in number of contribs'
             else:
 		contribs_added = current - d['contrib_set']
 		contribs_lost = d['contrib_set'] - current
-                message=self.repo + ' has ' + current_size + ' contributors. Change in contributors detected: '
+                message = self.repo + ' has ' + current_size + ' contributors. Change in contributors detected: '
                 self.slack_alert(message)
 		if len(contribs_added) > 0:
 		    new_con = self.set2str(contribs_added)
